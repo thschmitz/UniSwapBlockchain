@@ -128,13 +128,6 @@ export const TransactionProvider = ({ children }) => {
 
       await client.createIfNotExists(userDoc)
 
-      await client.path(currentAccount).setIfMissing({transactions: []}).insert("after", "transactions[-1]", [
-        {
-          _key: txHash,
-          _ref: txHash,
-          _type: "reference"
-        }
-      ])
     })()
   }, [currentAccount])
 
@@ -156,7 +149,7 @@ export const TransactionProvider = ({ children }) => {
 
     await client.createIfNotExists(txDoc)
 
-    await client.path(currentAccount).setIfMissing({transactions: []}).insert("after", "transactions[-1]", [
+    await client.patch(currentAccount).setIfMissing({transactions: []}).insert("after", "transactions[-1]", [
         {
             _key: txHash,
             _ref: txHash,
