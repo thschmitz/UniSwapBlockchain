@@ -116,6 +116,28 @@ export const TransactionProvider = ({ children }) => {
     checkIfWalletIsConnected()
   }, [])
 
+  useEffect(() => {
+    if(!currentAccount) return
+    ;(async () => {
+      const userDoc = {
+        _type: "users",
+        _id: currentAccount,
+        userName: "Unnamed",
+        address: currentAccount
+      }
+
+      await client.createIfNotExists(userDoc)
+
+      await client.path(currentAccount).setIfMissing({transactions: []}).insert("after", "transactions[-1]", [
+        {
+          _key: txHash,
+          _ref: txHash,
+          _type: "reference"
+        }
+      ])
+    })()
+  }, [currentAccount])
+
   const saveTransaction = async(
     txHash,
     amount,
@@ -126,6 +148,7 @@ export const TransactionProvider = ({ children }) => {
         _type: "transactions",
         _id: txHash,
         fromAddress: fromAddress,
+        toAddress: toAddress,
         timestamp: new Date(Date.now()).toISOString(),
         txHash: txHash,
         amount: parseFloat(amount),
