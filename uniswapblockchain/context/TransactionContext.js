@@ -27,11 +27,12 @@ const getEthereumContract = () => {
 export const TransactionProvider = ({ children }) => {
   const [currentAccount, setCurrentAccount] = useState()
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
   const [formData, setFormData] = useState({
     addressTo: '',
     amount: '',
   })
+
+  const router = useRouter()
 
   const handleChange = (e, name) => {
     setFormData(prevState => ({ ...prevState, [name]: e.target.value }))
@@ -160,6 +161,15 @@ export const TransactionProvider = ({ children }) => {
 
     return
   }
+
+
+  useEffect(() => {
+    if(isLoading){
+      router.push(`/?loading=${currentAccount}`)
+    } else{
+      router.push("/")
+    }
+  }, [isLoading])
 
   return (
     <TransactionContext.Provider
